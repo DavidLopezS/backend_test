@@ -1,7 +1,8 @@
-from pydantic import BaseModel
-from typing import Dict
 import requests
 import os
+from pydantic import BaseModel
+from typing import Dict
+
 
 class UserProfile(BaseModel):
     email: str
