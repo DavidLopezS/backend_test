@@ -39,3 +39,11 @@ class JobStructure(BaseModel):
                 return cls(title='No job found', subtitle='', caption='', metadata='')
         except Exception as e:
             return cls(title=f"Error parsing JSON: {e}", subtitle='', caption='', metadata='') 
+    
+    def equals(self, other: 'JobStructure') -> bool:
+        return(
+            self.title == other.title and
+            self.subtitle == other.subtitle and
+            self.caption == other.caption and
+            self.metadata == other.metadata
+        )
