@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Dict
 import requests
 import os
 
@@ -21,12 +22,12 @@ class JobStructure(BaseModel):
         rapid_api_host: str = os.environ.get('X_RAPID_API_HOST', '')
         api_endpoint: str = os.environ.get('URL', '')
 
-        headers = {
+        headers: Dict[str, str] = {
             "content-type": "application/json",
             "X-RapidAPI-Key": f"{rapid_api_key}",
             "X-RapidAPI-Host": f"{rapid_api_host}"
         }
-        payload = {"link": f"{linkedin_url}"}
+        payload: Dict[str, str] = {"link": f"{linkedin_url}"}
         
         response = requests.post(api_endpoint, json=payload, headers=headers)
 
