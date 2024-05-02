@@ -1,4 +1,6 @@
 from pydantic import BaseModel
+import requests
+import os
 
 class UserProfile(BaseModel):
     email: str
@@ -12,3 +14,28 @@ class JobStructure(BaseModel):
     subtitle: str
     caption: str
     metadata: str
+
+    @classmethod
+    def fetch_linkedin_profile(cls, linkedin_url: str):
+        rapid_api_key: str = os.environ.get('X_RAPID_API_KEY', '')
+        rapid_api_host: str = os.environ.get('X_RAPID_API_HOST', '')
+        api_endpoint: str = os.environ.get('URL', '')
+
+        headers = {
+            "content-type": "application/json",
+            "X-RapidAPI-Key": f"{rapid_api_key}",
+            "X-RapidAPI-Host": f"{rapid_api_host}"
+        }
+        payload = {"link": f"{linkedin_url}"}
+        
+        response = requests.post(api_endpoint, json=payload, headers=headers)
+
+        try:
+            experiences = response.json()['data']['experiences']
+            if experiences:
+                job_data = experiences[0]
+                return cls(title=job_data.get('title'), subtitle=job_data.get('subtitle'), caption=job_data.get('caption'), metadata=job_data.get('metadata'))
+            else:
+                return cls(title='No job found', subtitle='', caption='', metadata='')
+        except Exception as e:
+            return cls(title=f"Error parsing JSON: {e}", subtitle='', caption='', metadata='') 

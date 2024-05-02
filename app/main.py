@@ -1,7 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from typing import Dict
-from app.linkedin_api_logic import fetch_linkedin_profile
-from app.classes import UserProfile, EmailBody
+from app.classes import UserProfile, EmailBody, JobStructure
 
 app = FastAPI()
 
@@ -38,10 +37,7 @@ def trigger_job_change_detection(email_body: EmailBody):
             raise HTTPException(status_code=404, detail="User not found")
         
         linkedin_url = user_profiles[email]
-        job_change_notification = fetch_linkedin_profile(linkedin_url)
-        if job_change_notification is Exception:
-            raise HTTPException(status_code=500, detail=f"An error occured: {job_change_notification}")
-         
+        job_change_notification = JobStructure.fetch_linkedin_profile(linkedin_url)
         return {"message": job_change_notification}
     except Exception as e: 
         raise HTTPException(status_code=500, detail=f"An error occured: {e}") 
