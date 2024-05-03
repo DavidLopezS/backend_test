@@ -66,19 +66,32 @@ class Database:
         return sqlite3.connect(self.db_path)
     
     def create_user_profiles_table(self):
-        conn = self.get_connection()
-        cursor = conn.cursor()
-        cursor.execute('''CREATE TABLE IF NOT EXISTS user_profiles (
-                              id TEXT PRIMARY KEY,
-                              email TEXT,
-                              linkedin_url TEXT,
-                              current_job_title TEXT,
-                              current_job_subtitle TEXT,
-                              current_job_caption TEXT,
-                              current_job_metadata TEXT
-                          )''')
-        conn.commit()
-        conn.close()
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+            cursor.execute('''CREATE TABLE IF NOT EXISTS user_profiles (
+                                id TEXT PRIMARY KEY,
+                                email TEXT,
+                                linkedin_url TEXT,
+                                current_job_title TEXT,
+                                current_job_subtitle TEXT,
+                                current_job_caption TEXT,
+                                current_job_metadata TEXT
+                            )''')
+            conn.commit()
+            conn.close()
+        except Exception as e:
+            print(f"Error while creating the db: {e}")
+    
+    def cleanup_db_on_exit(self):
+        try:
+            if os.path.exists(self.db_path):
+                os.remove(self.db_path)
+                print("Database deleted on exit")
+            else:
+                print("Database file not found") 
+        except Exception as e:
+            print(f"Error in cleanup_db_on_exit: {e}") 
     
     def register_user(self, profile: UserProfile):
         try:
@@ -160,13 +173,4 @@ class Database:
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"An error occurred: {e}")
     
-    def cleanup_db_on_exit(self):
-        try:
-            if os.path.exists(self.db_path):
-                os.remove(self.db_path)
-                print("Database deleted on exit")
-            else:
-                print("Database file not found") 
-        except Exception as e:
-            print(f"Error in cleanup_db_on_exit: {e}") 
 
