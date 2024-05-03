@@ -1,0 +1,5 @@
+# Ignore the SQLite database file
+user_profiles.db
+
+# Ignore Python bytecode files
+app/__pycache__

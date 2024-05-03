@@ -46,8 +46,8 @@ def register_user(profile: UserProfile):
         current_job: JobStructure = JobStructure.fetch_linkedin_profile(profile.linkedin_url)
 
         cursor.execute('''INSERT INTO user_profiles (id, email, linkedin_url, current_job_title, current_job_subtitle, current_job_caption, current_job_metadata)
-                          VALUES (?, ?, ?, ?, ?, ?)''',
-                          (id, profile.linkedin_url, current_job.title, current_job.subtitle, current_job.caption, current_job.metadata))
+                          VALUES (?, ?, ?, ?, ?, ?, ?)''',
+                          (id, profile.email, profile.linkedin_url, current_job.title, current_job.subtitle, current_job.caption, current_job.metadata))
         
         conn.commit()
         conn.close()
@@ -64,7 +64,7 @@ def trigger_job_change_detection(email_body: EmailBody):
 
         email: str = email_body.email
 
-        cursor.execute('SELECT * FROM user_profiles WHERE email=?', (email))
+        cursor.execute('SELECT * FROM user_profiles WHERE email=?', (email,))
         user_profile = cursor.fetchone()
         if not  user_profile:
             raise HTTPException(status_code=404, detail="User not found")
