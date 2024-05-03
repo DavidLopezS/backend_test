@@ -1,15 +1,16 @@
-import sqlite3
 import uuid
 import requests
 import os
+import atexit
 from pydantic import BaseModel
 from typing import Dict, List, Optional
 from fastapi import HTTPException
+from app.tools import database_migration as db_import
 
 
 class UserProfile(BaseModel):
     email: str
-    linkedin_url: str
+    linkedin_url: Optional[str]
     job_num: int
 
 class EmailBody(BaseModel):
@@ -61,27 +62,10 @@ class JobStructure(BaseModel):
 class Database:
     def __init__(self, db_path: str):
         self.db_path = db_path
-    
-    def get_connection(self):
-        return sqlite3.connect(self.db_path)
-    
-    def create_user_profiles_table(self):
-        try:
-            conn = self.get_connection()
-            cursor = conn.cursor()
-            cursor.execute('''CREATE TABLE IF NOT EXISTS user_profiles (
-                                id TEXT PRIMARY KEY,
-                                email TEXT,
-                                linkedin_url TEXT,
-                                current_job_title TEXT,
-                                current_job_subtitle TEXT,
-                                current_job_caption TEXT,
-                                current_job_metadata TEXT
-                            )''')
-            conn.commit()
-            conn.close()
-        except Exception as e:
-            print(f"Error while creating the db: {e}")
+        self.register_cleanup_on_exit()
+
+    def register_cleanup_on_exit(self):
+        atexit.register(self.cleanup_db_on_exit)
     
     def cleanup_db_on_exit(self):
         try:
@@ -95,7 +79,7 @@ class Database:
     
     def register_user(self, profile: UserProfile):
         try:
-            conn = self.get_connection()
+            conn = db_import.get_connection(self.db_path)
             cursor = conn.cursor()
 
             user_id = str(uuid.uuid4())
@@ -114,7 +98,7 @@ class Database:
     
     def detect_job_changes(self, email_body: EmailBody):
         try: 
-            conn = self.get_connection()
+            conn = db_import.get_connection(self.db_path)
             cursor = conn.cursor()
 
             cursor.execute('SELECT * FROM user_profiles WHERE email=?', (email_body.email,))
@@ -159,7 +143,7 @@ class Database:
     
     def get_user_profiles(self) ->List[Dict]:
         try:
-            conn = self.get_connection()
+            conn = db_import.get_connection(self.db_path)
             cursor = conn.cursor()
 
             cursor.execute('SELECT * FROM user_profiles')
