@@ -1,8 +1,17 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from app.classes import UserProfile, EmailBody, Database
 from fastapi.middleware.cors import CORSMiddleware
 
-app: FastAPI = FastAPI()
+db = Database("user_profiles.db")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    db.create_user_profiles_table()
+    yield
+    db.cleanup_db_on_exit()
+
+app: FastAPI = FastAPI(lifespan=lifespan)
 
 # Enable CORS
 app.add_middleware(
@@ -12,11 +21,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-DB_PATH = "user_profiles.db"
-
-db = Database(DB_PATH)
-db.create_user_profiles_table()
 
 @app.post("/register")
 def register_user(profile: UserProfile):

@@ -159,4 +159,14 @@ class Database:
                 raise HTTPException(status_code=404, detail="No users registered")
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"An error occurred: {e}")
+    
+    def cleanup_db_on_exit(self):
+        try:
+            if os.path.exists(self.db_path):
+                os.remove(self.db_path)
+                print("Database deleted on exit")
+            else:
+                print("Database file not found") 
+        except Exception as e:
+            print(f"Error in cleanup_db_on_exit: {e}") 
 
