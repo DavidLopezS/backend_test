@@ -10,9 +10,11 @@ from fastapi import HTTPException
 class UserProfile(BaseModel):
     email: str
     linkedin_url: str
+    job_num: int
 
 class EmailBody(BaseModel):
     email: str
+    job_num: int
 
 class JobStructure(BaseModel):
     title: str
@@ -21,7 +23,7 @@ class JobStructure(BaseModel):
     metadata: Optional[str]
 
     @classmethod
-    def fetch_linkedin_profile(cls, linkedin_url: str):
+    def fetch_linkedin_profile(cls, linkedin_url: str, job_num: int):
         try:
             rapid_api_key: str = os.environ['X_RAPID_API_KEY']
             rapid_api_host: str = os.environ['X_RAPID_API_HOST']
@@ -39,7 +41,7 @@ class JobStructure(BaseModel):
         
             experiences = response.json().get('data', {}).get('experiences', [])
             if experiences:
-                job_data = experiences[0]
+                job_data = experiences[job_num]
                 return cls(title=job_data.get('title'), subtitle=job_data.get('subtitle'), caption=job_data.get('caption'), metadata=job_data.get('metadata'))
             else:
                 return cls(title='No job found')
@@ -84,7 +86,7 @@ class Database:
             cursor = conn.cursor()
 
             user_id = str(uuid.uuid4())
-            current_job = JobStructure.fetch_linkedin_profile(profile.linkedin_url)
+            current_job = JobStructure.fetch_linkedin_profile(profile.linkedin_url, profile.job_num)
 
             cursor.execute('''INSERT INTO user_profiles (id, email, linkedin_url, current_job_title, current_job_subtitle, current_job_caption, current_job_metadata)
                               VALUES (?, ?, ?, ?, ?, ?, ?)''',
@@ -102,15 +104,13 @@ class Database:
             conn = self.get_connection()
             cursor = conn.cursor()
 
-            email = email_body.email
-
-            cursor.execute('SELECT * FROM user_profiles WHERE email=?', (email,))
+            cursor.execute('SELECT * FROM user_profiles WHERE email=?', (email_body.email,))
             user_profile = cursor.fetchone()
             if not user_profile:
                 raise HTTPException(status_code=404, detail="User not found")
             
             linkedin_url = user_profile[2]
-            user_new_job = JobStructure.fetch_linkedin_profile(linkedin_url)
+            user_new_job = JobStructure.fetch_linkedin_profile(linkedin_url, email_body.job_num)
 
             if user_profile[3:7] == (user_new_job.title, user_new_job.subtitle, user_new_job.caption, user_new_job.metadata):
                 conn.close()
@@ -128,7 +128,7 @@ class Database:
                 cursor.execute('''UPDATE user_profiles
                                 SET current_job_title=?, current_job_subtitle=?, current_job_caption=?, current_job_metadata=?
                                 WHERE email=?''',
-                                (user_new_job.title, user_new_job.subtitle, user_new_job.caption, user_new_job.metadata, email))
+                                (user_new_job.title, user_new_job.subtitle, user_new_job.caption, user_new_job.metadata, email_body.email))
                 conn.commit()
                 conn.close()
 
