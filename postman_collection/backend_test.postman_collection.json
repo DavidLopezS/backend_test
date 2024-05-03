@@ -1,0 +1,124 @@
+{
+	"info": {
+		"_postman_id": "1151788c-92e5-4cee-98b2-04d7c2a5f747",
+		"name": "backend_test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27824110",
+		"_collection_link": "https://srrteam.postman.co/workspace/My-Workspace~1105c0f7-712f-46f3-8228-83e4a0ca141a/collection/27824110-1151788c-92e5-4cee-98b2-04d7c2a5f747?action=share&source=collection_link&creator=27824110"
+	},
+	"item": [
+		{
+			"name": "Register",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\":\"davidlopezsaludes@gmail.com\",\r\n    \"linkedin_url\": \"https://www.linkedin.com/in/david-lopez-saludes/\",\r\n    \"job_num\": 1\r\n\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{backend_test_base_url}}/register",
+					"host": [
+						"{{backend_test_base_url}}"
+					],
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Detect_Job_Changes",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"davidlopezsaludes@gmail.com\",\r\n    \"job_num\": 0\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{backend_test_base_url}}/detect_job_changes",
+					"host": [
+						"{{backend_test_base_url}}"
+					],
+					"path": [
+						"detect_job_changes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User_Profiles",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{backend_test_base_url}}/user_profiles",
+					"host": [
+						"{{backend_test_base_url}}"
+					],
+					"path": [
+						"user_profiles"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "API TEST",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-RapidAPI-Key",
+						"value": "9f5cd37c5bmsh47e1ba15a30b7ecp1f27cfjsn5e640e1ac804",
+						"type": "text"
+					},
+					{
+						"key": "X-RapidAPI-Host",
+						"value": "linkedin-data-scraper.p.rapidapi.com",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n     \"link\": \"https://www.linkedin.com/in/david-lopez-saludes/\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://linkedin-data-scraper.p.rapidapi.com/person",
+					"protocol": "https",
+					"host": [
+						"linkedin-data-scraper",
+						"p",
+						"rapidapi",
+						"com"
+					],
+					"path": [
+						"person"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
