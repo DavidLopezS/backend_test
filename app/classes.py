@@ -39,7 +39,7 @@ class JobStructure(BaseModel):
         
             experiences = response.json().get('data', {}).get('experiences', [])
             if experiences:
-                job_data = experiences[job_num]
+                job_data = experiences[0]
                 return cls(title=job_data.get('title'), subtitle=job_data.get('subtitle'), caption=job_data.get('caption'), metadata=job_data.get('metadata'))
             else:
                 return cls(title='No job found')
