@@ -5,5 +5,5 @@ def validate_email(email: str) -> bool:
     return re.match(pattern, email) is not None
 
 def validate_url(url: str) -> bool:
-    pattern = r"^(https?://)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*/?$"
+    pattern = r"^https://www\.linkedin\.com/in/[-\w]+/$"
     return re.match(pattern, url) is not None
