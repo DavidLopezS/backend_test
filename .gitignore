@@ -3,3 +3,4 @@ user_profiles.db
 
 # Ignore Python bytecode files
 __pycache__/
+tools/__pycache__/
