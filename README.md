@@ -1,4 +1,4 @@
-# Backend Test Opground - David López Saludes
+# Backend Test - David López Saludes
 ### DISCLAIMER ###
 This code runs with RapidAPI service and it is limited to 50 requests per month. It should be enough to test, as in the moment of testing the limitation should have been re-setted to 0. But be weary of the number of requests performed.
 
